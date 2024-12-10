@@ -1,0 +1,9 @@
+services:
+  web:
+      image: nginx
+      container_name: servidor-nginx
+      ports:
+        - 8080:80
+      volumes:
+        - './site:/usr/share/nginx/html'
+      mem_limit: 512m
