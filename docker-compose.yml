@@ -1,9 +1,39 @@
 services:
-  web:
-      image: nginx
-      container_name: servidor-nginx
-      ports:
-        - 8080:80
-      volumes:
-        - './site:/usr/share/nginx/html'
-      mem_limit: 512m
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=usuario
+      - DB_POSTGRESDB_PASSWORD=senha
+    depends_on:
+      - postgres
+    volumes:
+      - ./n8n_data:/home/node/.n8n
+
+  postgres:
+    image: postgres:latest
+    container_name: n8n_postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=usuario
+      - POSTGRES_PASSWORD=senha
+      - POSTGRES_DB=n8n
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+# services:
+#   web:
+#       image: nginx
+#       container_name: servidor-nginx
+#       ports:
+#         - 8080:80
+#       volumes:
+#         - './site:/usr/share/nginx/html'
+#       mem_limit: 512m
+      
