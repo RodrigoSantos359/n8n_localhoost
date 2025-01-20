@@ -5,28 +5,51 @@ services:
     restart: unless-stopped
     ports:
       - "5678:5678"
-    environment:
-      - DB_TYPE=postgresdb
-      - DB_POSTGRESDB_HOST=postgres
-      - DB_POSTGRESDB_PORT=5432
-      - DB_POSTGRESDB_DATABASE=n8n
-      - DB_POSTGRESDB_USER=usuario
-      - DB_POSTGRESDB_PASSWORD=senha
-    depends_on:
-      - postgres
     volumes:
-      - ./n8n_data:/home/node/.n8n
-
-  postgres:
-    image: postgres:latest
-    container_name: n8n_postgres
+      - ./n8n_data2:/home/node/.n8n
+    networks:
+      - n8n-rabbitmq
+    environment:
+      - RABBITMQ_HOST=rabbitmq # Nome do serviço RabbitMQ
+      - RABBITMQ_PORT=5672     # Porta padrão do RabbitMQ para AMQP
+      - RABBITMQ_USER=guest    # Substituir pelo usuário configurado
+      - RABBITMQ_PASSWORD=guest # Substituir pela senha configurada
+      # - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true # Forçar permissôes corretas
+  
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: rabbitmq
     restart: unless-stopped
+    ports:
+      - "5672:5672" # Porta para comunicação AMQP
+      - "15672:15672" # Porta para a interface de gerenciamento
     environment:
-      - POSTGRES_USER=usuario
-      - POSTGRES_PASSWORD=senha
-      - POSTGRES_DB=n8n
+      RABBITMQ_DEFAULT_USER: guest # Troque pelo usuário desejado
+      RABBITMQ_DEFAULT_PASS: guest # Troque pela senha desejada
+      RABBITMQ_NODENAME: rabbit@localhost
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - ./rabbitmq_data:/var/lib/rabbitmq # Persistencia de dados
+    #command: /bin/sh -c "chmod 600 /var/lib/rabbintmq/.erlang.cookie && rabbitmq-server"
+    networks:
+      - n8n-rabbitmq
+  
+networks:
+  n8n-rabbitmq:
+    driver: bridge
+    
+
+  # postgres:
+  #   image: postgres:latest
+  #   container_name: n8n_postgres
+  #   restart: unless-stopped
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     - POSTGRES_USER=usuario
+  #     - POSTGRES_PASSWORD=senha
+  #     - POSTGRES_DB=n8n
+  #   volumes:
+  #     - ./postgres_data:/var/lib/postgresql/data
 # services:
 #   web:
 #       image: nginx
@@ -34,6 +57,5 @@ services:
 #       ports:
 #         - 8080:80
 #       volumes:
-#         - './site:/usr/share/nginx/html'
-#       mem_limit: 512m
-      
+#         - '/site:/usr/share/nginx/html'
+#       mem_limit: 512m    
