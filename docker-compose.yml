@@ -15,6 +15,11 @@ services:
       - RABBITMQ_USER=guest    # Substituir pelo usuário configurado
       - RABBITMQ_PASSWORD=guest # Substituir pela senha configurada
       # - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true # Forçar permissôes corretas
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postmenino
+      - POSTGRES_PASSWORD=12345678
+      - POSTGRES_DB=n8n
   
   rabbitmq:
     image: rabbitmq:management-alpine
@@ -32,24 +37,28 @@ services:
     #command: /bin/sh -c "chmod 600 /var/lib/rabbintmq/.erlang.cookie && rabbitmq-server"
     networks:
       - n8n-rabbitmq
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postmenino
+      - POSTGRES_PASSWORD=12345678
+      - POSTGRES_DB=n8n
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - n8n-rabbitmq
   
 networks:
   n8n-rabbitmq:
     driver: bridge
     
 
-  # postgres:
-  #   image: postgres:latest
-  #   container_name: n8n_postgres
-  #   restart: unless-stopped
-  #   ports:
-  #     - "5432:5432"
-  #   environment:
-  #     - POSTGRES_USER=usuario
-  #     - POSTGRES_PASSWORD=senha
-  #     - POSTGRES_DB=n8n
-  #   volumes:
-  #     - ./postgres_data:/var/lib/postgresql/data
+ 
 # services:
 #   web:
 #       image: nginx
