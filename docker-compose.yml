@@ -14,12 +14,7 @@ services:
       - RABBITMQ_PORT=5672     # Porta padrão do RabbitMQ para AMQP
       - RABBITMQ_USER=guest    # Substituir pelo usuário configurado
       - RABBITMQ_PASSWORD=guest # Substituir pela senha configurada
-      # - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true # Forçar permissôes corretas
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=postmenino
-      - POSTGRES_PASSWORD=12345678
-      - POSTGRES_DB=n8n
+      - OLLAMA_BASE_URL=http://ollama:11434/ # URL do ollama para conexão
   
   rabbitmq:
     image: rabbitmq:management-alpine
@@ -52,19 +47,24 @@ services:
       - ./postgres_data:/var/lib/postgresql/data
     networks:
       - n8n-rabbitmq
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ollama_data:/root/.ollama # Perssistencia dos modelos baixados
+    networks:
+      - n8n-rabbitmq
+    environment:
+      - OLLAMA_MODEL=gemma
+    deploy:
+      resources:
+        limits:
+          memory: 8G
   
 networks:
   n8n-rabbitmq:
     driver: bridge
-    
-
- 
-# services:
-#   web:
-#       image: nginx
-#       container_name: servidor-nginx
-#       ports:
-#         - 8080:80
-#       volumes:
-#         - '/site:/usr/share/nginx/html'
-#       mem_limit: 512m    
