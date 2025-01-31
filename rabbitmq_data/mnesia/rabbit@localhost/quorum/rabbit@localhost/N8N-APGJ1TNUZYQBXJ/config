@@ -1,0 +1,25 @@
+#{id => {'n8n-apiBR_leads',rabbit@localhost},
+  machine =>
+      {module,rabbit_fifo,
+          #{name => 'n8n-apiBR_leads',max_length => undefined,
+            max_bytes => undefined,
+            queue_resource => {resource,<<"n8n-apiBR">>,queue,<<"leads">>},
+            created => 1738333357376,dead_letter_handler => undefined,
+            become_leader_handler =>
+                {rabbit_quorum_queue,become_leader,
+                    [{resource,<<"n8n-apiBR">>,queue,<<"leads">>}]},
+            overflow_strategy => drop_head,delivery_limit => 20,
+            expires => undefined,msg_ttl => undefined,
+            single_active_consumer_on => false}},
+  membership => voter,friendly_name => "queue 'leads' in vhost 'n8n-apiBR'",
+  cluster_name => 'n8n-apiBR_leads',uid => <<"N8N-APGJ1TNUZYQBXJ">>,
+  initial_members => [{'n8n-apiBR_leads',rabbit@localhost}],
+  log_init_args =>
+      #{max_checkpoints => 3,min_checkpoint_interval => 8192,
+        snapshot_interval => 8192,uid => <<"N8N-APGJ1TNUZYQBXJ">>},
+  metrics_key => {resource,<<"n8n-apiBR">>,queue,<<"leads">>},
+  ra_event_formatter =>
+      {rabbit_quorum_queue,format_ra_event,
+          [{resource,<<"n8n-apiBR">>,queue,<<"leads">>}]},
+  tick_timeout => 5000,broadcast_time => 100,
+  install_snap_rpc_timeout => 120000,await_condition_timeout => 30000}.
