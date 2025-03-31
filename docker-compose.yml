@@ -14,7 +14,6 @@ services:
       - RABBITMQ_PORT=5672     # Porta padrão do RabbitMQ para AMQP
       - RABBITMQ_USER=guest    # Substituir pelo usuário configurado
       - RABBITMQ_PASSWORD=guest # Substituir pela senha configurada
-      # - OLLAMA_BASE_URL=http://ollama:11434 # URL do ollama para conexão
   
   rabbitmq:
     image: rabbitmq:management-alpine
