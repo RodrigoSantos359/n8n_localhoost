@@ -1,0 +1,1 @@
+n8n_data2/database.sqlite filter=lfs diff=lfs merge=lfs -text
