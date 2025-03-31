@@ -14,7 +14,7 @@ services:
       - RABBITMQ_PORT=5672     # Porta padrão do RabbitMQ para AMQP
       - RABBITMQ_USER=guest    # Substituir pelo usuário configurado
       - RABBITMQ_PASSWORD=guest # Substituir pela senha configurada
-      - OLLAMA_BASE_URL=http://ollama:11434/ # URL do ollama para conexão
+      # - OLLAMA_BASE_URL=http://ollama:11434 # URL do ollama para conexão
   
   rabbitmq:
     image: rabbitmq:management-alpine
@@ -48,22 +48,6 @@ services:
     networks:
       - n8n-rabbitmq
 
-  ollama:
-    image: ollama/ollama:latest
-    container_name: ollama
-    restart: unless-stopped
-    ports:
-      - "11434:11434"
-    volumes:
-      - ./ollama_data:/root/.ollama # Perssistencia dos modelos baixados
-    networks:
-      - n8n-rabbitmq
-    environment:
-      - OLLAMA_MODEL=gemma
-    deploy:
-      resources:
-        limits:
-          memory: 8G
   
 networks:
   n8n-rabbitmq:
